@@ -1,69 +1,187 @@
 <template>
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-    <!-- Header -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex items-center space-x-4">
-            <el-button @click="goBack" :icon="ArrowLeft" size="small">
-              返回项目
-            </el-button>
-            <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
-              翻译器模式
-            </h1>
-          </div>
-          
-          <div class="flex items-center space-x-4">
-            <span class="text-sm text-gray-600 dark:text-gray-400">
-              项目: {{ projectId }} | 文件: {{ fileId }} | 页面: {{ currentPage }}
-            </span>
-            <el-button type="primary" size="small">
-              保存翻译
-            </el-button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div class="text-center py-12">
-          <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-          </svg>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            翻译器界面
-          </h2>
-          <p class="text-gray-600 dark:text-gray-400 mb-6">
-            这里将显示翻译器的具体内容，包括图片显示、文本识别、翻译编辑等功能
-          </p>
-          
-          <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 max-w-md mx-auto">
-            <h3 class="font-medium text-gray-900 dark:text-white mb-2">当前参数</h3>
-            <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-              <div>项目ID: {{ projectId }}</div>
-              <div>文件ID: {{ fileId }}</div>
-              <div>页面索引: {{ currentPage }}</div>
+  <div ref="container" class="w-full h-full block bg-gray-500 fixed inset-0">
+    <split-view persist-key="translator" @change="imageViewer?.onLayoutChanged" :min-first="380" :min-second="280"
+                gutter-color="#00000000">
+      <template #first>
+        <div class="relative w-full h-full overflow-hidden">
+          <div class="translator-nav-back absolute top-[2vh] left-[2vh] z-50">
+            <div class="flex bg-white/80 rounded overflow-hidden shadow-xl">
+              <ToolTip content="返回">
+                <button class="text-gray-800 hover:bg-gray-600/50 active:text-gray-300 transition-colors"
+                        @click="goBack"
+                >
+                  <el-icon class="text-gray-600 align-middle flex m-3" size="25px">
+                    <ArrowLeftBold/>
+                  </el-icon>
+                </button>
+              </ToolTip>
+              <ToolTip content="设置">
+                <button class="text-gray-800 hover:bg-gray-600/50 active:text-gray-300 transition-colors"
+                        @click="() => {  }"
+                >
+                  <el-icon class="text-gray-600 align-middle flex m-3" size="25px">
+                    <Tools/>
+                  </el-icon>
+                </button>
+              </ToolTip>
             </div>
           </div>
+          <div class="translator-nav-page absolute top-[2vh] right-[2vh] z-50">
+            <div class="flex bg-white/80 rounded overflow-hidden shadow-xl">
+              <ToolTip content="上一页">
+                <button class="text-gray-800 hover:bg-gray-600/50 active:text-gray-300 transition-colors"
+                        @click="() => {  }"
+                >
+                  <el-icon class="text-gray-600 align-middle flex m-3" size="25px">
+                    <CaretLeft/>
+                  </el-icon>
+                </button>
+              </ToolTip>
+              <button
+                  class="px-5 py-3 text-gray-800 hover:bg-gray-600/50 active:text-gray-300 transition-colors"
+                  @click="() => { }"
+              >
+                100/110
+              </button>
+              <ToolTip content="下一页">
+                <button class="text-gray-800 hover:bg-gray-600/50 active:text-gray-300 transition-colors"
+                        @click="() => {  }"
+                >
+                  <el-icon class="text-gray-600 align-middle flex m-3" size="25px">
+                    <CaretRight/>
+                  </el-icon>
+                </button>
+              </ToolTip>
+            </div>
+          </div>
+          <div v-if="loading" class="w-full h-full flex items-center justify-center">
+            <div style="text-align: center">
+              <el-icon class="is-loading" size="40px">
+                <Loading/>
+              </el-icon>
+              <br/>
+              <b>正在加载</b>
+            </div>
+          </div>
+          <div v-else-if="error" class="text-red-600 w-full h-full flex items-center justify-center">
+            <div style="text-align: center">
+              <el-icon size="50px">
+                <WarnTriangleFilled/>
+              </el-icon>
+              <br/>
+              <b>加载失败：{{ error }}</b>
+            </div>
+          </div>
+          <ImageViewer ref="imageViewer" v-else :imageUrl="imageUrl" :initialMarks="markerData"/>
         </div>
-      </div>
-    </div>
+      </template>
+      <template #second>
+        <ImageSourceViewer/>
+      </template>
+    </split-view>
   </div>
 </template>
+<style>
+.header-navigator {
+  display: none;
+}
+
+main {
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+.text-red-600 {
+  color: #dc2626;
+}
+</style>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft } from '@element-plus/icons-vue'
+import {computed, onMounted, ref} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
+import ImageViewer from "@/components/ImageViewer.vue";
+import {ArrowLeftBold, CaretLeft, CaretRight, Tools} from "@element-plus/icons-vue";
+import ToolTip from "@/components/ToolTip.vue";
+import SplitView from "@/components/SplitView.vue";
+import ImageSourceViewer from "@/components/Markers/ImageSourceViewer.vue";
 
 const route = useRoute()
 const router = useRouter()
 
 const projectId = computed(() => route.params.projectId as string)
 const fileId = computed(() => route.params.fileId as string)
-const currentPage = computed(() => route.query.page || '0')
+const targetId = '687e219c77c1d93171a969f3'//zh-CN
+const apiUrl = 'https://api.moetran.com'
+const authToken = ''
+
+const markerData = ref()
+const imageUrl = ref()
+const error = ref<string | null>(null)
+const loading = ref(true)
+
+onMounted(async () => {
+  try {
+    //https://api.moetran.com/v1/files/687e21b977c1d93171a969fc?target=687e219c77c1d93171a969f3
+    const fileInfoParams = new URLSearchParams({
+      target: targetId,
+    })
+    const fileRes = await fetch(apiUrl + `/v1/files/${fileId.value}?${fileInfoParams}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    })
+    if (!fileRes.ok) {
+      const contentType = fileRes.headers.get('Content-Type') || ''
+      let message = `请求失败（${fileRes.status}）`
+
+      if (contentType.includes('application/json')) {
+        const errJson = await fileRes.json()
+        if (errJson.message) message = errJson.message
+      } else {
+        const errText = await fileRes.text()
+        if (errText) message = errText
+      }
+
+      throw new Error(message)
+    }
+    const fileInfo = await fileRes.json()
+    imageUrl.value = fileInfo['url'].replace('c01.m-t.pics', 'oss.maloutran.top')
+
+    //https://api.moetran.com/v1/files/687e21b977c1d93171a969fc/sources?target_id=687e219c77c1d93171a969f3&paging=false
+    const targetParams = new URLSearchParams({
+      target_id: targetId,
+      paging: 'false'
+    })
+    const targetRes = await fetch(apiUrl + `/v1/files/${fileId.value}/sources?${targetParams}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    })
+    if (!fileRes.ok) {
+      const contentType = fileRes.headers.get('Content-Type') || ''
+      let message = `请求失败（${fileRes.status}）`
+
+      if (contentType.includes('application/json')) {
+        const errJson = await fileRes.json()
+        if (errJson.message) message = errJson.message
+      } else {
+        const errText = await fileRes.text()
+        if (errText) message = errText
+      }
+
+      throw new Error(message)
+    }
+    markerData.value = await targetRes.json()
+  } catch (err: any) {
+    error.value = err.message || '未知错误'
+  } finally {
+    loading.value = false
+  }
+})
 
 const goBack = () => {
   router.push(`/projects/${projectId.value}`)

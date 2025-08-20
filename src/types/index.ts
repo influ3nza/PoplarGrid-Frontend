@@ -62,12 +62,10 @@ export interface ProjectProgress {
 export interface Source {
   id: string
   content: string
-  position: {
-    x: number
-    y: number
-    width: number
-    height: number
-  }
+  x: number
+  y: number
+  positionType: number,
+  myTranslation: Translation
   translations: Translation[]
 }
 
