@@ -16,6 +16,9 @@ defineExpose({
   },
   resetScaleByY: () => {
     resetScale(imageScaleByY)
+  },
+  onLayoutChanged: () => {
+    recalculateResetPos(transform.scale)
   }
 })
 
@@ -28,7 +31,7 @@ const {transform, transformStyle, isDragging} = useMovable(container, {
   click: (e: MouseEvent) => emit('click', e)
 })
 
-let imageResetPos = {
+const imageResetPos = {
   x: 0,
   y: 0
 }

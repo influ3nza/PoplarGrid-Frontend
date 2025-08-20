@@ -25,6 +25,25 @@ const props = defineProps({
 const tooltipRef = ref(null)
 let instance = null
 
+// 暴露实例给父组件使用
+defineExpose({
+  get instance() {
+    return instance;
+  },
+  enable() {
+    if (instance) instance.enable();
+  },
+  disable() {
+    if (instance) instance.disable();
+  },
+  show() {
+    if (instance) instance.show();
+  },
+  hide() {
+    if (instance) instance.hide();
+  }
+});
+
 onMounted(() => {
   createTooltip()
 })

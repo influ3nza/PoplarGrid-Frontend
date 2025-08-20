@@ -9,6 +9,9 @@ interface useMovableOptions {
     constraints?: any,
     transformOrigin?: string,
     transitionStyle?: string,
+    mousedown?: any,
+    mouseup?: any,
+    mousemove?: any,
     click?: any,
     drag?: any
 }
@@ -30,11 +33,18 @@ export function useMovable(
         },
         drag = () => {
         },
+        mousedown = () => {
+        },
+        mouseup = () => {
+        },
+        mousemove = () => {
+        }
     } = options
 
     const transform = reactive({x: initialX, y: initialY, scale: initialScale})
+    const prevTransform = {x: 0, y: 0}
+
     const isDragging = ref(false)
-    const moved = ref(false)
     const origin = ref(transformOrigin)
     const transformStyle = computed(() => ({
         transform: `matrix(${transform.scale}, 0, 0, ${transform.scale}, ${transform.x}, ${transform.y})`,
@@ -54,22 +64,25 @@ export function useMovable(
 
     function onMouseDown(e: MouseEvent) {
         isDragging.value = true
-        moved.value = false
-        e.preventDefault()
+        prevTransform.x = e.x
+        prevTransform.y = e.y
         document.addEventListener('mousemove', onMouseMove)
         document.addEventListener('mouseup', onMouseUp)
+        mousedown(e)
+        e.preventDefault()
         e.stopPropagation()
     }
 
     function onMouseMove(e: MouseEvent) {
         if (!isDragging.value) return
-        moved.value = true
+        mousemove(e)
         clampPos(transform.x + e.movementX * accelerateFactor.value, transform.y + e.movementY * accelerateFactor.value)
     }
 
     function onMouseUp(e: MouseEvent) {
         isDragging.value = false
-        if (!moved.value) {
+        mouseup(e)
+        if (prevTransform.x === e.x && prevTransform.y === e.y) {
             click(e)
         } else {
             drag(e, transform.x, transform.y)
