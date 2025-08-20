@@ -371,7 +371,7 @@
                   v-else
                   :project="detailed_project_page.find(item => item.id === scope.row.id)!"
                   :color_theme="my_filter ? color_theme_2 : color_theme_1"
-                  style="width: 100%;"
+                  style="width: 100%"
                 />
               </template>
             </el-table-column>
@@ -428,11 +428,14 @@ import { membersApi } from "@/api/members";
 import { ProjectBasic, ProjectDetail, User } from "@/types";
 import { useProjectsStore } from "@/stores/projects";
 import { title } from "process";
+import HelloWorld from "@/components/HelloWorld.vue";
 
 const router = useRouter();
 const syncStore = useSyncStore();
 const authStore = useAuthStore();
 const projectStore = useProjectsStore();
+
+const hello = ref<any>(null);
 
 const expand_row_keys = ref<any[]>([]); // 保证表格同一时间只有一行被展开
 
@@ -562,8 +565,8 @@ const getProgressIcon = (status: number, index: number) => {
 };
 
 const navigateToProject = (project: any) => {
-    // 跳转到项目详情页
-    router.push(`/projects/${project.id}`);
+  // 跳转到项目详情页
+  router.push(`/projects/${project.id}`);
 };
 
 const switchMyFilter = () => {

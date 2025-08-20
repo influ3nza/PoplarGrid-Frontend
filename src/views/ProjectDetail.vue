@@ -33,7 +33,7 @@
                 style="width: 60%"
               >
                 <div
-                  class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                  class="responsive-grid"
                 >
                   <ProjectImageCard
                     v-for="(file, index) in projectStore.projectFile"
@@ -41,6 +41,7 @@
                     :color_theme_trans="color_theme_trans"
                     :color_theme_check="color_theme_check"
                     @click="() => (focus_file = index)"
+                    
                   />
                 </div>
                 <div class="image-pagination">
@@ -191,7 +192,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 50vh;
+  min-height: 750px;
 }
 
 .placeholder-content {
@@ -210,6 +211,12 @@ onMounted(async () => {
   font-size: 1rem;
   margin: 0;
   color: #6b7280;
+}
+
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
 }
 
 /* 预览头部 */

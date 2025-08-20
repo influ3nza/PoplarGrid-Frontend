@@ -3,13 +3,19 @@ import { ref } from 'vue'
 
 defineProps<{ msg: string }>()
 
-const count = ref(0)
+const count = ref(0);
+const rootRef = ref<any>(null)
+
+defineExpose({
+  rootRef,
+  getWidth: () => rootRef.value?.offsetWidth
+})
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
 
-  <div class="card">
+
+  <div class="card" ref="rootRef">
     <button type="button" @click="count++">count is {{ count }}</button>
     <p>
       Edit

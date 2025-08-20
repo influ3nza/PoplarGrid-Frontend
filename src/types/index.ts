@@ -1,11 +1,13 @@
 export interface User {
-  id: string
-  name: string
-  email: string
-  avatar?: string
-  signature?: string
-  isAdmin?: boolean
-  createdAt?: string
+  id: number
+  role: number
+  team: {
+    description: string
+    id: number
+    moetran_id: string
+    name: string
+  }
+  
 }
 
 export interface MemberLabor {

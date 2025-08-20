@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 import { ProjectFile } from "@/types";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { Picture, CollectionTag, EditPen, Select, View } from '@element-plus/icons-vue';
 
 interface Props {
@@ -162,7 +162,7 @@ const checkProgress = computed(() => {
 }
 
 .content-area {
-  padding: 0.8vw 0.8vw 0.3vw 0.8vw;
+  padding: 10px 10px 5px 10px;
   background: #ffffff;
 }
 
@@ -180,14 +180,14 @@ const checkProgress = computed(() => {
   align-items: center;
   justify-content: space-between;
   gap: 0.2vw;
-  font-size: 1vw;
+  font-size: 15px;
   color: #606266;
   font-weight: 600;
   transition: color 0.2s ease;
 }
 
 .stat-item .el-icon {
-  font-size: 1vw;
+  font-size: 15px;
   transition: transform 0.2s ease;
 }
 
