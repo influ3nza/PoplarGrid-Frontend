@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="layout-container">
     <!-- 筛选器 -->
     <div
       class="filter-container bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
@@ -106,13 +106,13 @@
                       />
                     </div>
                     <div class="flex items-center font-semibold text-sm">
-                      <span>{{ item.name }}</span>
+                      <span>{{ item.nickname }}</span>
                     </div>
                   </div>
                 </el-option>
                 <template #label>
                   <div class="flex items-center font-semibold text-sm">
-                    <span>{{ participant_filter?.name }}</span>
+                    <span>{{ participant_filter?.nickname }}</span>
                   </div>
                 </template>
               </el-select>
@@ -275,7 +275,7 @@
       <div class="table-content">
         <div class="overflow-x-auto">
           <el-table
-            :data="projectStore.projectPage"
+            :data="projectStore.projects_page"
             class="project-table"
             show-header="false"
             table-layout="fix"
@@ -611,7 +611,7 @@ const handleExpandChange = async (row: any, expandedRows: any[]) => {
     // 如果没有缓存过，则请求项目详情
     detailed_project_loading.value = true;
     await projectStore.fetchProject(row.id);
-    detailed_project_page.value.push(projectStore.projectDetail!);
+    detailed_project_page.value.push(projectStore.project_detail!);
     detailed_project_loading.value = false;
   }
 };
@@ -745,6 +745,13 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.layout-container {
+  width: 90%;
+  margin: auto;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
 /* 表格样式 */
 .table-container {
   background: #f8fafc;

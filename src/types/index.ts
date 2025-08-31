@@ -1,20 +1,21 @@
 export interface User {
-  id: number
-  role: number
-  team: {
-    description: string
-    id: number
-    moetran_id: string
-    name: string
-  }
-  
+  id: number // 用户id
+  isAdmin: boolean // 是否为管理员
+  moetranId: string // 龙译id
+  moetranJwt: string // 龙译jwt
+  nickname: string // 昵称
+  email: string // 邮箱
+  qqNumber: string // qq号
+  remark: string // 备注
+  avatar: string // 头像url
 }
 
 export interface MemberLabor {
   joinedTime: string // 加入时间
   laborRole: number // 成员在项目中的角色，使用掩码
   nickname: string // 昵称
-  user_id: number // 用户ID
+  userId: number // 用户ID
+  avatar: string // 头像url
 }
 
 // 项目基本信息

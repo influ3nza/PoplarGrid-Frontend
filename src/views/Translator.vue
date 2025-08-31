@@ -76,7 +76,7 @@
         </div>
       </template>
       <template #second>
-        <ImageSourceViewer/>
+        <ImageSourceViewer :initial-marks="[]"/>
       </template>
     </split-view>
   </div>
@@ -112,9 +112,9 @@ const router = useRouter()
 
 const projectId = computed(() => route.params.projectId as string)
 const fileId = computed(() => route.params.fileId as string)
-const targetId = '687e219c77c1d93171a969f3'//zh-CN
+const targetId = '68923d44ce66c0e10e05222c'//zh-CN
 const apiUrl = 'https://api.moetran.com'
-const authToken = ''
+const authToken = 'eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1NTU3NTU1NywiZXhwIjoxNzU4MTY3NTU3fQ.eyJpZCI6IjY3NTA2ZjE2Y2FmMTFmZDNlNjZlNTQ3ZiIsInBjIjoiZmRmYjk4MDFhOTZhY2ZiZiJ9.Ua0GUUm12nemCZ2_O5D_YkR_0kh91ZASjiYKwwhODh1s6AyVa2XwLv4Xqi-zWDidLA6qwDE9H15fU-pefGQKRg'
 
 const markerData = ref()
 const imageUrl = ref()
