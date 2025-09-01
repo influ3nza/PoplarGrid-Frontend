@@ -7,158 +7,28 @@
       <el-skeleton :rows="10" animated />
     </div>
 
-    <div class="space-y-6" v-else>
-      <div class="flex items-center space-x-4">
+    <div
+      class="space-y-6"
+      style="display: flex; flex-direction: column; height: 100%"
+      v-else
+    >
+      <div class="title-container flex items-center space-x-4 mb-4">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
           {{ projectStore.project_detail!.title }}
         </h1>
       </div>
 
-      <!-- 正在加载中 -->
-      <el-alert
-        v-if="user_status === null"
-        type="info"
-        :closable="false"
-        show-icon
-        class="status-alert"
-      >
-        <template #default>
-          <div class="alert-content">
-            <span>正在获取你的项目状态，屏气凝神！</span>
-            <el-button
-              type="info"
-              disabled
-              size="default"
-              class="action-button"
-            >
-              正在加载中
-            </el-button>
-          </div>
-        </template>
-      </el-alert>
-
-      <!-- 未加入项目状态 -->
-      <el-alert
-        v-if="user_status === 0"
-        type="error"
-        :closable="false"
-        show-icon
-        class="status-alert"
-      >
-        <template #default>
-          <div class="alert-content">
-            <span>你还未加入此项目</span>
-            <el-button
-              type="primary"
-              size="default"
-              icon="Plus"
-              @click=""
-              class="action-button"
-            >
-              加入项目
-            </el-button>
-          </div>
-        </template>
-      </el-alert>
-
-      <!-- 已加入项目状态 -->
-      <el-alert
-        v-if="user_status === 1"
-        type="success"
-        :closable="false"
-        show-icon
-        class="status-alert"
-      >
-        <template #title>
-          <div class="alert-content">
-            <div class="status-text">
-              <span>你已于{{ user_labor!.joinedTime }}加入此项目，角色为</span>
-              <el-tag type="success" size="small" class="role-tag">
-                {{ generateRoleByMask(user_labor!.laborRole) }}
-              </el-tag>
-            </div>
-            <el-button
-              type="success"
-              size="default"
-              icon="Select"
-              disabled
-              class="action-button"
-            >
-              已加入
-            </el-button>
-          </div>
-        </template>
-      </el-alert>
-
-      <!-- 已发出申请状态 -->
-      <el-alert
-        v-if="user_status === 2"
-        type="warning"
-        :closable="false"
-        show-icon
-        class="status-alert"
-      >
-        <template #default>
-          <div class="alert-content">
-            <span>你已向负责人发出申请</span>
-            <el-button
-              type="warning"
-              size="default"
-              icon="Clock"
-              disabled
-              loading
-              class="action-button"
-            >
-              等待审核
-            </el-button>
-          </div>
-        </template>
-      </el-alert>
-
-      <!-- 收到邀请状态 -->
-      <el-alert
-        v-if="user_status === 3"
-        type="info"
-        :closable="false"
-        show-icon
-        class="status-alert"
-      >
-        <template #default>
-          <div class="alert-content">
-            <span>你已收到负责人的邀请</span>
-            <div class="button-group">
-              <el-button
-                type="primary"
-                size="default"
-                icon="Check"
-                @click=""
-                class="action-button"
-              >
-                同意邀请
-              </el-button>
-              <el-button
-                type="danger"
-                size="default"
-                icon="Close"
-                plain
-                @click=""
-                class="action-button"
-              >
-                拒绝
-              </el-button>
-            </div>
-          </div>
-        </template>
-      </el-alert>
-
-      <!-- 完整视图 -->
-      <div>
-        <!-- 标签页 -->
-        <el-tabs v-model="activeTab" class="project-detail-tabs">
+      <!-- 内容区域 -->
+      <div class="content-area">
+        <el-tabs
+          v-model="activeTab"
+          class="project-detail-tabs"
+          tab-position="left"
+        >
           <el-tab-pane label="项目图片" name="files">
             <div
               v-if="projectStore.file_loading"
-              class="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+              class="bg-white dark:bg-gray-800 rounded-lg shadow"
               style="width: 70%"
             >
               <el-skeleton :rows="5" animated />
@@ -166,7 +36,7 @@
             <div class="resizable-container" v-else>
               <!-- 左侧项目图片区域 -->
               <div
-                class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 resizable-left"
+                class="bg-white dark:bg-gray-800 rounded-lg shadow resizable-left"
                 :style="{ width: leftWidth + '%' }"
               >
                 <div class="responsive-grid">
@@ -200,6 +70,7 @@
               <div
                 class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 resizable-right"
                 :style="{ width: rightWidth + '%' }"
+                style="display: flex; flex-direction: column"
               >
                 <div class="preview-header">
                   <div
@@ -241,21 +112,17 @@
                 </div>
                 <div
                   v-if="focus_file === null && !file_edit_mode"
-                  class="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+                  class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 preview-placeholder"
                   style="width: 100%"
                 >
-                  <div class="preview-placeholder">
-                    <div class="placeholder-content">
-                      <h3>选择图片预览</h3>
-                      <p>点击左侧缩略图查看完整图片</p>
-                      <p>共{{ total_files }}页</p>
-                    </div>
-                  </div>
+                  <h3>选择图片预览</h3>
+                  <p>点击左侧缩略图查看完整图片</p>
+                  <p>共{{ total_files }}页</p>
                 </div>
                 <div
                   v-if="focus_file !== null && !file_edit_mode"
                   class="bg-white dark:bg-gray-800 rounded-lg"
-                  style="width: 100%"
+                  style="width: 100%; height: 100%; overflow-y: scroll"
                 >
                   <div class="image-container">
                     <div class="full-image-wrapper">
@@ -265,9 +132,14 @@
                           projectStore.project_file_page[focus_file].fullUrl
                         "
                         fit="contain"
-                        :preview-src-list="[
-                          projectStore.project_file_page[focus_file].fullUrl,
-                        ]"
+                        :preview-src-list="
+                          projectStore.project_file_page.map(
+                            (item) => item.fullUrl
+                          )
+                        "
+                        :initial-index="focus_file"
+                        show-progress
+                        :infinite="false"
                         class="full-image"
                       >
                         <template #placeholder>
@@ -353,6 +225,7 @@ import ProjectImageCard from "@/components/ProjectImageCard.vue";
 import { useAuthStore } from "@/stores/auth";
 import { MemberLabor } from "@/types";
 import { generateRoleByMask } from "@/utils/userAbility";
+import { Search } from "@element-plus/icons-vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -390,11 +263,11 @@ const user_status = ref<number | null>(null);
 const filter_username = ref<string>("");
 
 // 拖拽布局
-const leftWidth = ref<number>(70)
-const rightWidth = ref<number>(30)
-const isResizing = ref<boolean>(false)
-const startX = ref<number>(0)
-const startLeftWidth = ref<number>(0)
+const leftWidth = ref<number>(70);
+const rightWidth = ref<number>(30);
+const isResizing = ref<boolean>(false);
+const startX = ref<number>(0);
+const startLeftWidth = ref<number>(0);
 
 // 开始拖拽
 const startResize = (e: MouseEvent) => {
@@ -403,45 +276,50 @@ const startResize = (e: MouseEvent) => {
   startLeftWidth.value = leftWidth.value;
 
   // 添加全局样式防止文本选择
-  document.body.classList.add('resizing');
+  document.body.classList.add("resizing");
 
   // 添加全局事件监听
-  document.addEventListener('mousemove', handleResize);
-  document.addEventListener('mouseup', stopResize);
-  
+  document.addEventListener("mousemove", handleResize);
+  document.addEventListener("mouseup", stopResize);
+
   // 防止默认行为
   e.preventDefault();
-}
+};
 
 // 处理拖拽
 const handleResize = (e: MouseEvent) => {
   if (!isResizing.value) return;
 
-  const rect = document.querySelector('.resizable-container')!.getBoundingClientRect();
+  const rect = document
+    .querySelector(".resizable-container")!
+    .getBoundingClientRect();
   const deltaX = e.clientX - startX.value;
   const containerWidthPx = rect.width;
   const deltaPercent = (deltaX / containerWidthPx) * 100;
-  
+
   let newLeftWidth = startLeftWidth.value + deltaPercent;
-  
+
   // 限制最小和最大宽度
   newLeftWidth = Math.max(20, Math.min(75, newLeftWidth));
-  
+
   leftWidth.value = newLeftWidth;
   rightWidth.value = 100 - newLeftWidth;
-}
+};
 
 // 停止拖拽
 const stopResize = () => {
   isResizing.value = false;
-  
+
   // 移除全局样式
-  document.body.classList.remove('resizing');
-  
+  document.body.classList.remove("resizing");
+
   // 移除事件监听
-  document.removeEventListener('mousemove', handleResize);
-  document.removeEventListener('mouseup', stopResize);
-}
+  document.removeEventListener("mousemove", handleResize);
+  document.removeEventListener("mouseup", stopResize);
+
+  // 记录拖拽比例
+  localStorage.setItem("proj-detail-left", leftWidth.value.toString());
+};
 
 // 开始翻译功能
 const startTranslation = () => {
@@ -491,6 +369,10 @@ onMounted(async () => {
   color_theme_check.value =
     localStorage.getItem("color-theme-check") || "#fa5555";
 
+  // 获取拖拽比例
+  leftWidth.value = Number(localStorage.getItem("proj-detail-left") || 70);
+  rightWidth.value = 100 - leftWidth.value;
+
   // 获取项目文件
   await projectStore.fetchProjectFiles(projectId);
   user_status.value = 0;
@@ -507,71 +389,58 @@ onMounted(async () => {
 });
 </script>
 
+<style>
+.header-navigator {
+  display: none;
+}
+
+html,
+body {
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-sizing: border-box;
+  overflow: hidden; /* 禁止页面整体滚动 */
+}
+
+main {
+  max-width: 100% !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-sizing: border-box;
+}
+</style>
+
 <style scoped>
-/* 项目加入状态 */
-.status-alert {
-  border-radius: 8px;
-  padding: 16px 20px;
-}
-
-.alert-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 16px;
-}
-
-.status-text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-}
-
-.role-tag {
-  margin-left: 8px;
-  font-weight: 500;
-}
-
-.action-button {
-  min-width: 100px;
-  font-weight: 500;
-}
-
-.button-group {
-  display: flex;
-  gap: 8px;
-}
-
-/* 自定义alert样式 */
-.status-alert :deep(.el-alert__content) {
-  width: 100%;
-  padding-right: 0;
-}
-
-.status-alert :deep(.el-alert__title) {
-  width: 100%;
-  margin-bottom: 0;
-}
-
-.status-alert :deep(.el-alert__description) {
-  width: 100%;
-  margin: 0;
-  padding-top: 0;
-}
-
 /* 拖拽布局 */
 .resizable-container {
   display: flex;
   gap: 0;
   padding-bottom: 5px;
-  position: relative;
+  height: 100%; 
 }
 
-.resizable-left, .resizable-right {
+.resizable-left {
   min-width: 20%;
   max-width: 80%;
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
+  height: 100%; 
+  position: relative; /* 新增：作为分页栏的定位容器 */
+  padding-bottom: 60px; /* 新增：预留分页栏高度的空间 */
+}
+
+.resizable-right {
+  min-width: 20%;
+  max-width: 80%;
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
+  height: 100%; 
 }
 
 .resize-handle {
@@ -583,6 +452,7 @@ onMounted(async () => {
   background: transparent;
   position: relative;
   user-select: none;
+  height: 100%; 
 }
 
 .resize-handle:hover .resize-line {
@@ -617,6 +487,8 @@ onMounted(async () => {
 /* 项目成员 */
 .members-container {
   padding: 1rem;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .search-container {
@@ -728,43 +600,70 @@ onMounted(async () => {
 /* 项目详情 */
 .project-detail {
   padding: 2vh 3vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .image-pagination {
   width: 100%;
   display: flex;
-  padding: 2vh 2vw 0 2vw;
+  padding: 1vh 2vw;
   background: rgba(255, 255, 255, 0.8);
   border-radius: 0 0 12px 12px;
   border-top: 1px solid #e2e8f0;
   justify-content: center;
+  height: 60px;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.project-detail-tabs {
+  flex: 1;
+  display: flex;
+  min-height: 0;
 }
 
 .project-detail-tabs :deep(.el-tabs__content) {
-  padding-top: 20px;
+  padding: 10px 5px 0;
+  height: 100%;
+  overflow: hidden; 
 }
 
-/* 预览占位符样式 */
-.preview-placeholder {
+.project-detail-tabs :deep(.el-tab-pane) {
   height: 100%;
+  overflow: hidden;
+}
+
+.preview-placeholder {
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-bottom: 10px; 
 }
 
-.placeholder-content {
-  text-align: center;
-  color: #6b7280;
-}
-
-.placeholder-content h3 {
+.preview-placeholder h3 {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0 0 1vh 0;
   color: #374151;
 }
 
-.placeholder-content p {
+.preview-placeholder p {
   font-size: 1rem;
   margin: 0;
   color: #6b7280;
@@ -774,19 +673,21 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;
+  overflow-y: scroll;
+  padding: 10px;
 }
 
-/* 预览头部 */
 .preview-header {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-direction: column;
-  margin-bottom: 2vh;
+  margin-bottom: 1vh;
   padding-bottom: 1vh;
   border-bottom: 1px solid #e5e7eb;
   gap: 1vh;
+  flex-shrink: 0;
 }
 
 .image-count {
@@ -795,21 +696,20 @@ onMounted(async () => {
   font-weight: 500;
 }
 
-/* 图片容器 */
 .image-container {
-  height: calc(100% - 6vh);
+  flex: 1; 
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .full-image-wrapper {
   position: relative;
   width: 100%;
-  height: 100%;
+  max-width: 95%; 
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .full-image {
@@ -818,7 +718,7 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-/* 蒙版样式 - 修复点击问题 */
+/* 蒙版样式 */
 .image-overlay {
   position: absolute;
   top: 0;
@@ -832,17 +732,17 @@ onMounted(async () => {
   opacity: 0;
   transition: opacity 0.3s ease;
   border-radius: 8px;
-  pointer-events: none; /* 关键：让蒙版不阻挡点击 */
+  pointer-events: none;
 }
 
 .full-image-wrapper:hover .image-overlay {
-  opacity: 1;
+  opacity: 0;
 }
 
 .overlay-content {
   text-align: center;
   color: white;
-  pointer-events: none; /* 确保内容也不阻挡点击 */
+  pointer-events: none;
 }
 
 .overlay-content span {

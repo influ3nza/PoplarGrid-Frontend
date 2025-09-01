@@ -100,6 +100,7 @@ const checkProgress = computed(() => {
   position: relative;
   display: flex;
   flex-direction: column;
+  min-height: 150px;
 }
 
 .file-card:hover {

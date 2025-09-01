@@ -7,7 +7,7 @@
           <el-image
             class="project-image"
             :key="project.id"
-            :src="projectStore.projectFile[0]?.fullUrl"
+            :src="projectStore.project_file_page[0]?.fullUrl"
             fit="contain"
             lazy
           >
