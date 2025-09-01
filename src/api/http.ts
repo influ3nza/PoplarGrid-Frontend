@@ -498,10 +498,8 @@ export const mockApi = {
       {
         id: `68923d5a77c1d93171aa4322`,
         name: `文件_${projectId}_1.jpg`,
-        coverUrl:
-          "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=400",
-        fullUrl:
-          "https://cdn.cartoonporn.to/nhentai/storage/images/614031/1.webp",
+        coverUrl: "1",
+        fullUrl: "1",
         sourceCount: 10,
         translatedSourceCount: 8,
         checkedSourceCount: 5,
@@ -533,8 +531,7 @@ export const mockApi = {
         name: `文件_${projectId}_4.jpg`,
         coverUrl:
           "https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg?auto=compress&cs=tinysrgb&w=400",
-        fullUrl:
-          "1",
+        fullUrl: "1",
         sourceCount: 0,
         translatedSourceCount: 0,
         checkedSourceCount: 0,
@@ -544,8 +541,7 @@ export const mockApi = {
         name: `文件_${projectId}_4.jpg`,
         coverUrl:
           "https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg?auto=compress&cs=tinysrgb&w=400",
-        fullUrl:
-          "1",
+        fullUrl: "1",
         sourceCount: 0,
         translatedSourceCount: 0,
         checkedSourceCount: 0,
@@ -555,8 +551,7 @@ export const mockApi = {
         name: `文件_${projectId}_4.jpg`,
         coverUrl:
           "https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg?auto=compress&cs=tinysrgb&w=400",
-        fullUrl:
-          "1",
+        fullUrl: "1",
         sourceCount: 0,
         translatedSourceCount: 0,
         checkedSourceCount: 0,
@@ -566,8 +561,7 @@ export const mockApi = {
         name: `文件_${projectId}_4.jpg`,
         coverUrl:
           "https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg?auto=compress&cs=tinysrgb&w=400",
-        fullUrl:
-          "1",
+        fullUrl: "1",
         sourceCount: 0,
         translatedSourceCount: 0,
         checkedSourceCount: 0,
@@ -577,8 +571,7 @@ export const mockApi = {
         name: `文件_${projectId}_4.jpg`,
         coverUrl:
           "https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg?auto=compress&cs=tinysrgb&w=400",
-        fullUrl:
-          "1",
+        fullUrl: "1",
         sourceCount: 0,
         translatedSourceCount: 0,
         checkedSourceCount: 0,
@@ -588,12 +581,11 @@ export const mockApi = {
         name: `文件_${projectId}_4.jpg`,
         coverUrl:
           "https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg?auto=compress&cs=tinysrgb&w=400",
-        fullUrl:
-          "1",
+        fullUrl: "1",
         sourceCount: 0,
         translatedSourceCount: 0,
         checkedSourceCount: 0,
-      }
+      },
     ];
   },
 

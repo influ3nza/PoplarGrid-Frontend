@@ -1,7 +1,5 @@
 <template>
-  <div 
-    class="file-card"
-  >
+  <div class="file-card">
     <!-- 图片区域 -->
     <div class="image-container">
       <el-image
@@ -45,16 +43,22 @@
       <div class="progress-container">
         <!-- 底层进度条 (翻译进度) -->
         <div class="progress-bar progress-translate">
-          <div 
+          <div
             class="progress-fill translate-fill"
-            :style="{ width: translateProgress + '%', background: color_theme_trans }"
+            :style="{
+              width: translateProgress + '%',
+              background: color_theme_trans,
+            }"
           ></div>
         </div>
         <!-- 上层进度条 (检查进度) -->
         <div class="progress-bar progress-check">
-          <div 
+          <div
             class="progress-fill check-fill"
-            :style="{ width: checkProgress + '%', background: color_theme_check }"
+            :style="{
+              width: checkProgress + '%',
+              background: color_theme_check,
+            }"
           ></div>
         </div>
       </div>
@@ -65,7 +69,13 @@
 <script setup lang="ts">
 import { ProjectFile } from "@/types";
 import { computed, onMounted, ref } from "vue";
-import { Picture, CollectionTag, EditPen, Select, View } from '@element-plus/icons-vue';
+import {
+  Picture,
+  CollectionTag,
+  EditPen,
+  Select,
+  View,
+} from "@element-plus/icons-vue";
 
 interface Props {
   file: ProjectFile;
@@ -101,16 +111,17 @@ const checkProgress = computed(() => {
   display: flex;
   flex-direction: column;
   min-height: 150px;
+  box-sizing: border-box;
 }
 
 .file-card:hover {
-  transform: translateY(-0.33vw) scale(1.02);
+  /* transform: translateY(-0.33vw) scale(1.02); */
   box-shadow: 0 1vw 2.67vw rgba(0, 0, 0, 0.15);
   border-color: #000000;
 }
 
 .file-card:active {
-  transform: translateY(-0.16vw) scale(1.01);
+  /* transform: translateY(-0.16vw) scale(1.01); */
   transition: transform 0.1s ease;
 }
 
@@ -127,7 +138,7 @@ const checkProgress = computed(() => {
 }
 
 .file-card:hover .card-image {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .image-error {

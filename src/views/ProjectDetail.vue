@@ -40,13 +40,52 @@
                 :style="{ width: leftWidth + '%' }"
               >
                 <div class="responsive-grid">
-                  <ProjectImageCard
+                  <div
                     v-for="(file, index) in projectStore.project_file_page"
-                    :file="file"
-                    :color_theme_trans="color_theme_trans"
-                    :color_theme_check="color_theme_check"
-                    @click="() => (focus_file = index)"
-                  />
+                    :key="file.id"
+                    style="position: relative"
+                  >
+                    <transition name="file-edit-bar">
+                      <div
+                        style="
+                          display: flex;
+                          align-items: center;
+                          justify-content: space-between;
+                          padding: 5px 10px;
+                          position: absolute;
+                          left: 0px;
+                          top: 0px;
+                          background-color: rgba(0, 0, 0, 0.7);
+                          z-index: 100;
+                          width: 100%;
+                          border-radius: 1vw 1vw 0 0;
+                        "
+                        v-if="file_edit_mode"
+                      >
+                        <el-checkbox
+                          :model-value="
+                            selected_files.includes(
+                              index + (current_page - 1) * page_size
+                            )
+                          "
+                          @update:modelValue="(val: boolean) => handleFileSelect(index, val)"
+                          size="large"
+                        />
+                        <el-button
+                          type="danger"
+                          plain
+                          :icon="Delete"
+                          size="small"
+                        ></el-button>
+                      </div>
+                    </transition>
+                    <ProjectImageCard
+                      :file="file"
+                      :color_theme_trans="color_theme_trans"
+                      :color_theme_check="color_theme_check"
+                      @click="() => (focus_file = index)"
+                    />
+                  </div>
                 </div>
                 <div class="image-pagination">
                   <el-pagination
@@ -139,11 +178,24 @@
                         "
                         :initial-index="focus_file"
                         show-progress
+                        hide-on-click-modal
                         :infinite="false"
                         class="full-image"
                       >
                         <template #placeholder>
                           <el-skeleton :rows="5" animated />
+                        </template>
+                        <template #toolbar="{}">
+                          <el-button
+                            type="primary"
+                            @click="startTranslation"
+                            :disabled="user_status !== 1"
+                            >{{
+                              user_status === 1
+                                ? "从此页开始汉化"
+                                : "非本项目成员不得操作"
+                            }}</el-button
+                          >
                         </template>
                       </el-image>
                       <div class="image-overlay">
@@ -204,6 +256,7 @@
             </div>
           </el-tab-pane>
           <el-tab-pane label="项目操作" name="project">
+            <span></span>
             <span>导出</span>
             <el-button>导出全部内容</el-button>
             <el-button>仅导出翻译数据</el-button>
@@ -225,7 +278,7 @@ import ProjectImageCard from "@/components/ProjectImageCard.vue";
 import { useAuthStore } from "@/stores/auth";
 import { MemberLabor } from "@/types";
 import { generateRoleByMask } from "@/utils/userAbility";
-import { Search } from "@element-plus/icons-vue";
+import { Delete, Search } from "@element-plus/icons-vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -248,6 +301,9 @@ const color_theme_check = ref<string>("");
 
 // 目前焦点的完整图url
 const focus_file = ref<number | null>(null);
+
+// 多选图片
+const selected_files = ref<number[]>([]);
 
 // 是否处于图片编辑导出模式
 const file_edit_mode = ref<boolean>(false);
@@ -334,12 +390,35 @@ const startTranslation = () => {
 const handleCurrentPageChange = (page: number) => {
   current_page.value = page;
   // 这里添加分页逻辑
+
+  console.log(
+    selected_files.value.includes(
+      0 + current_page.value * page_size - page_size
+    )
+  );
 };
 
 // 修改图片编辑模式
 const handleFileEditModeChange = (val: boolean) => {
   file_edit_mode.value = val;
   focus_file.value = null;
+};
+
+// 处理文件选择
+const handleFileSelect = (index: number, isSelected: boolean) => {
+  const globalIndex = index + (current_page.value - 1) * page_size;
+
+  if (isSelected) {
+    if (!selected_files.value.includes(globalIndex)) {
+      selected_files.value.push(globalIndex);
+    }
+  } else {
+    selected_files.value = selected_files.value.filter(
+      (id) => id !== globalIndex
+    );
+  }
+
+  selected_files.value.sort((a, b) => a - b);
 };
 
 // 过滤后的用户列表
@@ -420,16 +499,16 @@ main {
   display: flex;
   gap: 0;
   padding-bottom: 5px;
-  height: 100%; 
+  height: 100%;
 }
 
 .resizable-left {
   min-width: 20%;
   max-width: 80%;
-  overflow: hidden; 
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 100%; 
+  height: 100%;
   position: relative; /* 新增：作为分页栏的定位容器 */
   padding-bottom: 60px; /* 新增：预留分页栏高度的空间 */
 }
@@ -437,10 +516,10 @@ main {
 .resizable-right {
   min-width: 20%;
   max-width: 80%;
-  overflow: hidden; 
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 100%; 
+  height: 100%;
 }
 
 .resize-handle {
@@ -452,7 +531,7 @@ main {
   background: transparent;
   position: relative;
   user-select: none;
-  height: 100%; 
+  height: 100%;
 }
 
 .resize-handle:hover .resize-line {
@@ -614,6 +693,33 @@ main {
   overflow: hidden;
 }
 
+/* 图片编辑栏 */
+.file-edit-bar-enter-active {
+  animation: expandIn 0.2s ease-out;
+}
+
+.file-edit-bar-leave-active {
+  animation: expandOut 0.2s ease-out;
+}
+
+@keyframes expandIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes expandOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .image-pagination {
   width: 100%;
   display: flex;
@@ -639,7 +745,7 @@ main {
 .project-detail-tabs :deep(.el-tabs__content) {
   padding: 10px 5px 0;
   height: 100%;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .project-detail-tabs :deep(.el-tab-pane) {
@@ -653,7 +759,7 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: 10px; 
+  padding-bottom: 10px;
 }
 
 .preview-placeholder h3 {
@@ -697,7 +803,7 @@ main {
 }
 
 .image-container {
-  flex: 1; 
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -706,7 +812,7 @@ main {
 .full-image-wrapper {
   position: relative;
   width: 100%;
-  max-width: 95%; 
+  max-width: 95%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -716,6 +822,16 @@ main {
   cursor: pointer;
   border-radius: 8px;
   overflow: hidden;
+}
+
+:deep(.el-image-viewer__btn) {
+  opacity: 1;
+}
+
+:deep(.el-image-viewer__actions__inner .el-button) {
+  font-size: 18px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 /* 蒙版样式 */
@@ -736,7 +852,7 @@ main {
 }
 
 .full-image-wrapper:hover .image-overlay {
-  opacity: 0;
+  opacity: 0.5;
 }
 
 .overlay-content {
