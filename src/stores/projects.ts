@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed, toRaw } from "vue";
 import type {
+  OutputHistory,
   ProjectBasic,
   ProjectDetail,
   ProjectFile,
@@ -15,6 +16,7 @@ export const useProjectsStore = defineStore(
     const projects_page = ref<ProjectBasic[]>([]); // 单页项目信息
     const project_detail = ref<ProjectDetail | null>(null); // 单个项目详细信息
     const project_file_page = ref<ProjectFile[]>([]); // 单页项目文件信息
+    const project_output_history = ref<OutputHistory[]>([]); // 项目导出历史
 
     const projects_page_loading = ref<boolean>(false); // 项目分页是否正在加载
     const project_detail_loading = ref<boolean>(false); // 项目详细是否正在加载
@@ -137,6 +139,7 @@ export const useProjectsStore = defineStore(
       project_detail,
       projects_page,
       project_file_page,
+      project_output_history,
       activeProjects,
       completedProjects,
       projects_page_loading,

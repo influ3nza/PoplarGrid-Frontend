@@ -56,12 +56,14 @@
                           "
                           @update:modelValue="(val: boolean) => handleFileSelect(index, val)"
                           size="large"
+                          class="edit-bar-checkbox"
                         />
                         <el-button
                           type="danger"
                           plain
                           :icon="Delete"
                           size="small"
+                          class="edit-bar-delete"
                         ></el-button>
                       </div>
                     </transition>
@@ -93,8 +95,11 @@
 
               <!-- 右侧预览区域 -->
               <div
-                class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 resizable-right"
-                :style="{ width: rightWidth + '%' }"
+                class="bg-white dark:bg-gray-800 rounded-lg shadow resizable-right"
+                :style="{
+                  width: rightWidth + '%',
+                  'min-width': file_edit_mode ? '35%' : '0',
+                }"
                 style="display: flex; flex-direction: column"
               >
                 <div class="preview-header">
@@ -117,7 +122,11 @@
                     </div>
                     <el-switch
                       v-model="file_edit_mode"
-                      :active-text="user_status === 1 ? '编辑/导出/上传' : '非本项目成员不得操作'"
+                      :active-text="
+                        user_status === 1
+                          ? '编辑/导出/上传'
+                          : '非本项目成员不得操作'
+                      "
                       inactive-text="浏览模式"
                       @change="handleFileEditModeChange"
                       :disabled="user_status !== 1"
@@ -138,8 +147,7 @@
                 </div>
                 <div
                   v-if="focus_file === null && !file_edit_mode"
-                  class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 preview-placeholder"
-                  style="width: 100%"
+                  class="container-right preview-placeholder"
                 >
                   <h3>选择图片预览</h3>
                   <p>点击左侧缩略图查看完整图片</p>
@@ -147,8 +155,7 @@
                 </div>
                 <div
                   v-if="focus_file !== null && !file_edit_mode"
-                  class="bg-white dark:bg-gray-800 rounded-lg"
-                  style="width: 100%; height: 100%; overflow-y: scroll"
+                  class="container-right"
                 >
                   <div class="image-container">
                     <div class="full-image-wrapper">
@@ -191,6 +198,142 @@
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div class="container-right export-panel" v-if="file_edit_mode">
+                  <div class="panel-header">
+                    <div class="header-content">
+                      <el-icon class="export-icon">
+                        <Download />
+                      </el-icon>
+                      <span class="panel-title">导出文件</span>
+                    </div>
+                    <el-tag
+                      :type="
+                        selected_files.length === 0 ? 'primary' : 'success'
+                      "
+                      effect="light"
+                      class="file-count"
+                    >
+                      {{
+                        selected_files.length === 0
+                          ? "全部" + total_files + "页"
+                          : "已选择" + selected_files.length + "页"
+                      }}
+                    </el-tag>
+                  </div>
+
+                  <div class="export-section">
+                    <div class="export-section-title">选择操作</div>
+                    <div class="export-operation">
+                      <el-button
+                        type="primary"
+                        :icon="Select"
+                        size="default"
+                        @click=""
+                      >
+                        全选
+                      </el-button>
+                      <el-button
+                        type="warning"
+                        :icon="Switch"
+                        size="default"
+                        @click=""
+                      >
+                        反选
+                      </el-button>
+                      <el-button
+                        type="danger"
+                        :icon="Delete"
+                        size="default"
+                        @click=""
+                      >
+                        清空
+                      </el-button>
+                    </div>
+                  </div>
+
+                  <div class="export-section">
+                    <div class="export-section-title">导出选项</div>
+                    <div class="export-option">
+                      <el-button
+                        type="primary"
+                        :icon="PictureFilled"
+                        size="large"
+                        @click=""
+                      >
+                        图片 + 翻译
+                      </el-button>
+                      <el-button
+                        type="success"
+                        :icon="DocumentCopy"
+                        size="large"
+                        @click=""
+                      >
+                        仅翻译
+                      </el-button>
+                    </div>
+                  </div>
+
+                  <div class="export-section">
+                    <div class="export-section-title">导出历史</div>
+                    <div
+                      v-for="record in projectStore.project_output_history"
+                      :key="record.createdTime"
+                    >
+                      <el-card>
+                        <el-image :src="record.user.avatar" fit="cover" />
+                        <span>{{ record.user.nickname }}</span>
+                        <span>{{ record.createdTime }}</span>
+                        <!-- TODO by influ3nza: mock output history -->
+                      </el-card>
+                    </div>
+                    <div
+                      v-if="projectStore.project_output_history.length === 0"
+                    >
+                      <el-empty
+                        description="暂无导出记录"
+                        :image-size="50"
+                        style="padding: 5px"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="panel-header upload-panel">
+                    <div class="header-content">
+                      <el-icon class="export-icon">
+                        <Upload />
+                      </el-icon>
+                      <span class="panel-title">上传文件</span>
+                    </div>
+                    <el-button> 上传 </el-button>
+                  </div>
+
+                  <div class="panel-header search-panel">
+                    <div class="header-content">
+                      <el-icon class="export-icon">
+                        <Search />
+                      </el-icon>
+                      <span class="panel-title">译文搜索/替换</span>
+                    </div>
+                    <el-switch
+                      active-text="生成校对"
+                      inactive-text="修改原文"
+                    />
+                  </div>
+
+                  <div class="export-section">
+                    <p>a</p>
+                    <p>a</p>
+                    <p>a</p>
+                    <p>a</p>
+                    <p>a</p>
+                    <p>a</p>
+                    <p>a</p>
+                    <p>a</p>
+                    <p>a</p>
+                    <p>a</p>
+                    <p>a</p>
                   </div>
                 </div>
               </div>
@@ -244,9 +387,7 @@
           </el-tab-pane>
           <el-tab-pane label="项目操作" name="project">
             <span></span>
-            <span>导出</span>
-            <el-button>导出全部内容</el-button>
-            <el-button>仅导出翻译数据</el-button>
+
             <span>危险区域</span>
             <el-button type="error">退出项目</el-button>
           </el-tab-pane>
@@ -265,7 +406,15 @@ import ProjectImageCard from "@/components/ProjectImageCard.vue";
 import { useAuthStore } from "@/stores/auth";
 import { MemberLabor } from "@/types";
 import { generateRoleByMask } from "@/utils/userAbility";
-import { Delete, Search } from "@element-plus/icons-vue";
+import {
+  Delete,
+  DocumentCopy,
+  PictureFilled,
+  Search,
+  Select,
+  Switch,
+  Upload,
+} from "@element-plus/icons-vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -422,7 +571,7 @@ const filteredUsers = computed(() => {
 // 回退路由
 const routerBack = () => {
   router.back();
-}
+};
 
 onMounted(async () => {
   // 获取项目详情
@@ -508,6 +657,8 @@ main {
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding: 1.5rem;
+  padding-bottom: 1rem;
 }
 
 .resize-handle {
@@ -621,28 +772,6 @@ main {
   text-align: center;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .alert-content {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .status-text {
-    justify-content: center;
-    text-align: center;
-  }
-
-  .button-group {
-    justify-content: center;
-  }
-
-  .action-button {
-    flex: 1;
-  }
-}
-
 /* 状态特定的样式调整 */
 .status-alert.el-alert--error {
   background-color: #fef2f2;
@@ -686,7 +815,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 10px;
+  padding: 5px 10px 5px 15px;
   position: absolute;
   left: 0px;
   top: 0px;
@@ -720,6 +849,61 @@ main {
   to {
     opacity: 0;
   }
+}
+
+/* 自定义复选框样式 */
+.edit-bar-checkbox {
+  --el-checkbox-font-size: 16px;
+}
+
+.edit-bar-checkbox :deep(.el-checkbox__input) {
+  transform: scale(1.1);
+}
+
+.edit-bar-checkbox :deep(.el-checkbox__inner) {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.edit-bar-checkbox :deep(.el-checkbox__inner:hover) {
+  border-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit-bar-checkbox :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.edit-bar-checkbox
+  :deep(.el-checkbox__input.is-checked .el-checkbox__inner::after) {
+  border-color: #fff;
+  border-width: 2px;
+}
+
+/* 自定义删除按钮样式 */
+.edit-bar-delete {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  color: rgba(245, 108, 108, 0.9);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.edit-bar-delete:hover {
+  background-color: rgba(245, 108, 108, 0.15);
+  /* border-color: #f56c6c; */
+  color: #f56c6c;
+  transform: scale(1.05);
 }
 
 /* 图片分页 */
@@ -758,6 +942,16 @@ main {
 }
 
 /* 右侧图片占位 */
+.container-right {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 5px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  margin-top: 1rem;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
 .preview-placeholder {
   flex: 1;
   display: flex;
@@ -784,7 +978,7 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: 10px;
 }
 
@@ -794,8 +988,6 @@ main {
   justify-content: space-between;
   align-items: center;
   flex-direction: column;
-  margin-bottom: 1vh;
-  padding-bottom: 1vh;
   border-bottom: 1px solid #e5e7eb;
   gap: 1vh;
   flex-shrink: 0;
@@ -812,6 +1004,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  padding: 10px 0 10px 0;
 }
 
 .full-image-wrapper {
@@ -886,5 +1079,90 @@ main {
 
 .dark .preview-header {
   border-bottom-color: #4b5563;
+}
+
+.export-panel {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--el-border-color-light);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .export-icon {
+    font-size: 20px;
+    color: var(--el-color-primary);
+  }
+
+  .panel-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+  }
+
+  .file-count {
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 16px;
+  }
+}
+
+.export-section {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.export-section-title {
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.export-operation {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .el-button {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+}
+
+.export-option {
+  display: flex;
+  gap: 12px;
+
+  .el-button {
+    border-radius: 8px;
+    font-weight: 600;
+    height: 44px;
+    transition: all 0.2s ease;
+  }
+}
+
+.upload-panel {
+  margin-top: 8px;
+}
+
+.search-panel {
+  margin-top: 8px;
 }
 </style>

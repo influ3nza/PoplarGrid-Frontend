@@ -18,6 +18,12 @@ export interface MemberLabor {
   avatar: string // 头像url
 }
 
+export interface OutputHistory {
+  createdTime: string // 导出时间
+  status: number // 导出状态
+  user: User // 导出用户
+}
+
 // 项目基本信息
 export interface ProjectBasic {
   allowAutoJoin: boolean // 是否允许自动加入
