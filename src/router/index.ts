@@ -12,61 +12,61 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: () => import('@/views/Login.vue'),
-      meta: { requiresGuest: true }
+      meta: { requiresGuest: true, hideNav: true }
     },
     {
       path: '/dashboard',
       name: 'Dashboard',
       component: () => import('@/views/Dashboard.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, hideNav: false }
     },
     {
       path: '/projects',
       name: 'Projects',
       component: () => import('@/views/Projects.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, hideNav: true }
     },
     {
       path: '/projects/:id',
       name: 'ProjectDetail',
       component: () => import('@/views/ProjectDetail.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, hideNav: true }
     },
     {
       path: '/translator/:projectId/:fileId',
       name: 'Translator',
       component: () => import('@/views/Translator.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, hideNav: true }
     },
     {
       path: '/project-management',
       name: 'ProjectManagement',
       component: () => import('@/views/ProjectManagement.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, hideNav: false }
     },
     {
       path: '/statistics',
       name: 'Statistics',
       component: () => import('@/views/Statistics.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, hideNav: false }
     },
     {
       path: '/teams',
       name: 'Teams',
       component: () => import('@/views/Teams.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, hideNav: true }
     },
     {
       path: '/admin',
       name: 'Admin',
       component: () => import('@/views/Admin.vue'),
-      meta: { requiresAuth: true, requiresAdmin: true }
+      meta: { requiresAuth: true, requiresAdmin: true, hideNav: true }
     },
     {
       path: '/profile',
       name: 'Profile',
       component: () => import('@/views/Profile.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, hideNav: true }
     }
   ]
 })

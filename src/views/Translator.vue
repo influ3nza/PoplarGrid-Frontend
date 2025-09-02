@@ -81,11 +81,8 @@
     </split-view>
   </div>
 </template>
-<style>
-.header-navigator {
-  display: none;
-}
 
+<style>
 main {
   max-width: 100% !important;
   margin: 0 !important;

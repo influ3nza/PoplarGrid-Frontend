@@ -13,6 +13,7 @@
       v-else
     >
       <div class="title-container flex items-center space-x-4 mb-4">
+        <el-button @click="routerBack" type="primary">返回</el-button>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
           {{ projectStore.project_detail!.title }}
         </h1>
@@ -46,22 +47,7 @@
                     style="position: relative"
                   >
                     <transition name="file-edit-bar">
-                      <div
-                        style="
-                          display: flex;
-                          align-items: center;
-                          justify-content: space-between;
-                          padding: 5px 10px;
-                          position: absolute;
-                          left: 0px;
-                          top: 0px;
-                          background-color: rgba(0, 0, 0, 0.7);
-                          z-index: 100;
-                          width: 100%;
-                          border-radius: 1vw 1vw 0 0;
-                        "
-                        v-if="file_edit_mode"
-                      >
+                      <div class="file-edit-bar" v-if="file_edit_mode">
                         <el-checkbox
                           :model-value="
                             selected_files.includes(
@@ -131,9 +117,10 @@
                     </div>
                     <el-switch
                       v-model="file_edit_mode"
-                      active-text="编辑/导出/上传"
+                      :active-text="user_status === 1 ? '编辑/导出/上传' : '非本项目成员不得操作'"
                       inactive-text="浏览模式"
                       @change="handleFileEditModeChange"
+                      :disabled="user_status !== 1"
                     />
                   </div>
                   <el-button
@@ -432,6 +419,11 @@ const filteredUsers = computed(() => {
   );
 });
 
+// 回退路由
+const routerBack = () => {
+  router.back();
+}
+
 onMounted(async () => {
   // 获取项目详情
   const projectId = Number(route.params.id as string);
@@ -468,11 +460,7 @@ onMounted(async () => {
 });
 </script>
 
-<style>
-.header-navigator {
-  display: none;
-}
-
+<style scoped>
 html,
 body {
   height: 100% !important;
@@ -694,6 +682,20 @@ main {
 }
 
 /* 图片编辑栏 */
+.file-edit-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  width: 100%;
+  border-radius: 1vw 1vw 0 0;
+}
+
 .file-edit-bar-enter-active {
   animation: expandIn 0.2s ease-out;
 }
@@ -720,6 +722,7 @@ main {
   }
 }
 
+/* 图片分页 */
 .image-pagination {
   width: 100%;
   display: flex;
@@ -736,6 +739,7 @@ main {
   right: 0;
 }
 
+/* 侧边分栏 */
 .project-detail-tabs {
   flex: 1;
   display: flex;
@@ -753,6 +757,7 @@ main {
   overflow: hidden;
 }
 
+/* 右侧图片占位 */
 .preview-placeholder {
   flex: 1;
   display: flex;
