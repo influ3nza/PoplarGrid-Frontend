@@ -430,6 +430,9 @@ export const mockApi = {
         createdAt: "TIME1",
         description: "这是一个模拟的项目描述",
         updatedAt: "TIME2",
+        sourceCount: 100,
+        translatedSourceCount: 45,
+        checkedSourceCount: 20,
       },
       {
         allowAutoJoin: true,

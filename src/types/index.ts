@@ -24,6 +24,13 @@ export interface OutputHistory {
   user: User // 导出用户
 }
 
+export interface TranslationSearchResult {
+  pageIndex: number // 页码
+  sourceIndex: number // 标记号
+  sourceType: number // 标记类型
+  targetText: string // 目标文本
+}
+
 // 项目基本信息
 export interface ProjectBasic {
   allowAutoJoin: boolean // 是否允许自动加入
@@ -44,6 +51,9 @@ export interface ProjectDetail extends ProjectBasic {
   createdAt: string // 创建时间
   description: string // 项目描述
   updatedAt: string // 更新时间
+  sourceCount: number // 总标记数量
+  translatedSourceCount: number // 已翻译标记数量
+  checkedSourceCount: number // 已校对标记数量
 }
 
 // 项目文件信息

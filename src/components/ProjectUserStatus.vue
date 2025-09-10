@@ -1,31 +1,25 @@
 <template>
-  <!-- 正在加载中 -->
-  <el-alert
-    v-if="user_status === null"
-    type="info"
-    :closable="false"
-    show-icon
-    class="status-alert"
-  >
-    <template #default>
+  <el-card :style="{
+        'background-color': getBgColor(user_status),
+      }" class="project-user-status">
+    <!-- 正在加载中 -->
+    <el-card
+      v-if="user_status === null"
+      class="status-alert"
+    >
       <div class="alert-content">
         <span>正在获取你的项目状态，屏气凝神！</span>
         <el-button type="info" disabled size="default" class="action-button">
           正在加载中
         </el-button>
       </div>
-    </template>
-  </el-alert>
+    </el-card>
 
-  <!-- 未加入项目状态 -->
-  <el-alert
-    v-if="user_status === 0"
-    type="error"
-    :closable="false"
-    show-icon
-    class="status-alert"
-  >
-    <template #default>
+    <!-- 未加入项目状态 -->
+    <el-card
+      v-if="user_status === 0"
+      class="status-alert"
+    >
       <div class="alert-content">
         <span>你还未加入此项目</span>
         <el-button
@@ -38,22 +32,17 @@
           加入项目
         </el-button>
       </div>
-    </template>
-  </el-alert>
+    </el-card>
 
-  <!-- 已加入项目状态 -->
-  <el-alert
-    v-if="user_status === 1"
-    type="success"
-    :closable="false"
-    show-icon
-    class="status-alert"
-  >
-    <template #title>
+    <!-- 已加入项目状态 -->
+    <el-card
+      v-if="user_status === 1"
+      class="status-alert"
+    >
       <div class="alert-content">
         <div class="status-text">
           <span>你已于{{ user_labor!.joinedTime }}加入此项目，角色为</span>
-          <el-tag type="success" size="small" class="role-tag">
+          <el-tag size="large" class="role-tag">
             {{ generateRoleByMask(user_labor!.laborRole) }}
           </el-tag>
         </div>
@@ -66,19 +55,22 @@
         >
           已加入
         </el-button>
+        <el-button
+          type="danger"
+          size="default"
+          icon="Failed"
+          class="action-button"
+        >
+          退出项目
+        </el-button>
       </div>
-    </template>
-  </el-alert>
+    </el-card>
 
-  <!-- 已发出申请状态 -->
-  <el-alert
-    v-if="user_status === 2"
-    type="warning"
-    :closable="false"
-    show-icon
-    class="status-alert"
-  >
-    <template #default>
+    <!-- 已发出申请状态 -->
+    <el-card
+      v-if="user_status === 2"
+      class="status-alert"
+    >
       <div class="alert-content">
         <span>你已向负责人发出申请</span>
         <el-button
@@ -92,18 +84,13 @@
           等待审核
         </el-button>
       </div>
-    </template>
-  </el-alert>
+    </el-card>
 
-  <!-- 收到邀请状态 -->
-  <el-alert
-    v-if="user_status === 3"
-    type="info"
-    :closable="false"
-    show-icon
-    class="status-alert"
-  >
-    <template #default>
+    <!-- 收到邀请状态 -->
+    <el-card
+      v-if="user_status === 3"
+      class="status-alert"
+    >
       <div class="alert-content">
         <span>你已收到负责人的邀请</span>
         <div class="button-group">
@@ -128,23 +115,55 @@
           </el-button>
         </div>
       </div>
-    </template>
-  </el-alert>
+    </el-card>
+  </el-card>
 </template>
 
 <script setup lang="ts">
-import { MemberLabor } from '@/types';
-import { generateRoleByMask } from '@/utils/userAbility';
+import { MemberLabor } from "@/types";
+import { generateRoleByMask } from "@/utils/userAbility";
 
 interface Props {
-    user_status: number | null;
-    user_labor: MemberLabor | null;
+  user_status: number | null;
+  user_labor: MemberLabor | null;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
+
+const getBgColor = (status: number | null): string => {
+  switch (status) {
+    case null:
+      return "#d9d9d9";
+    case 0:
+      return "#f2c7c7";
+    case 1:
+      return "#c9f1c6";
+    case 2:
+      return "#f2e3c7";
+    case 3:
+      return "#c7f2f2";
+    default:
+      return "#d9d9d9";
+  }
+};
 </script>
 
 <style scoped>
+.project-user-status {
+  font-size: 20px;
+  font-weight: 600;
+
+  .el-tag {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .el-button {
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
 /* 项目加入状态 */
 .status-alert {
   border-radius: 8px;
@@ -164,11 +183,6 @@ const props = defineProps<Props>();
   align-items: center;
   gap: 8px;
   flex: 1;
-}
-
-.role-tag {
-  margin-left: 8px;
-  font-weight: 500;
 }
 
 .action-button {

@@ -100,242 +100,31 @@
                   width: rightWidth + '%',
                   'min-width': file_edit_mode ? '35%' : '0',
                 }"
-                style="display: flex; flex-direction: column"
               >
-                <div class="preview-header">
-                  <div
-                    style="display: flex; align-items: center; width: 100%"
-                    :style="{
-                      'justify-content':
-                        focus_file !== null && !file_edit_mode
-                          ? 'space-between'
-                          : 'right',
-                    }"
-                  >
-                    <div
-                      v-if="focus_file !== null && !file_edit_mode"
-                      class="image-count"
-                    >
-                      图片
-                      {{ 1 + focus_file + page_size * (current_page - 1) }} /
-                      {{ total_files }}
-                    </div>
-                    <el-switch
-                      v-model="file_edit_mode"
-                      :active-text="
-                        user_status === 1
-                          ? '编辑/导出/上传'
-                          : '非本项目成员不得操作'
-                      "
-                      inactive-text="浏览模式"
-                      @change="handleFileEditModeChange"
-                      :disabled="user_status !== 1"
-                    />
-                  </div>
-                  <el-button
-                    v-if="focus_file !== null && !file_edit_mode"
-                    style="width: 100%"
-                    type="primary"
-                    @click="startTranslation"
-                    :disabled="user_status !== 1"
-                    >{{
-                      user_status === 1
-                        ? "从此页开始汉化"
-                        : "非本项目成员不得操作"
-                    }}</el-button
-                  >
-                </div>
-                <div
-                  v-if="focus_file === null && !file_edit_mode"
-                  class="container-right preview-placeholder"
-                >
-                  <h3>选择图片预览</h3>
-                  <p>点击左侧缩略图查看完整图片</p>
-                  <p>共{{ total_files }}页</p>
-                </div>
-                <div
-                  v-if="focus_file !== null && !file_edit_mode"
+                <ProjectImageHeader
+                  :focus_file="focus_file"
+                  :file_edit_mode="file_edit_mode"
+                  @update:file_edit_mode="handleFileEditModeChange"
+                  :user_status="user_status"
+                  :total_files="total_files"
+                  :page_size="page_size"
+                  :current_page="current_page"
+                />
+
+                <ProjectImagePreview
                   class="container-right"
-                >
-                  <div class="image-container">
-                    <div class="full-image-wrapper">
-                      <el-image
-                        style="width: 100%; height: 100%"
-                        :src="
-                          projectStore.project_file_page[focus_file].fullUrl
-                        "
-                        fit="contain"
-                        :preview-src-list="
-                          projectStore.project_file_page.map(
-                            (item) => item.fullUrl
-                          )
-                        "
-                        :initial-index="focus_file"
-                        show-progress
-                        hide-on-click-modal
-                        :infinite="false"
-                        class="full-image"
-                      >
-                        <template #placeholder>
-                          <el-skeleton :rows="5" animated />
-                        </template>
-                        <template #toolbar="{}">
-                          <el-button
-                            type="primary"
-                            @click="startTranslation"
-                            :disabled="user_status !== 1"
-                            >{{
-                              user_status === 1
-                                ? "从此页开始汉化"
-                                : "非本项目成员不得操作"
-                            }}</el-button
-                          >
-                        </template>
-                      </el-image>
-                      <div class="image-overlay">
-                        <div class="overlay-content">
-                          <span>点击放大查看</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="container-right export-panel" v-if="file_edit_mode">
-                  <div class="panel-header">
-                    <div class="header-content">
-                      <el-icon class="export-icon">
-                        <Download />
-                      </el-icon>
-                      <span class="panel-title">导出文件</span>
-                    </div>
-                    <el-tag
-                      :type="
-                        selected_files.length === 0 ? 'primary' : 'success'
-                      "
-                      effect="light"
-                      class="file-count"
-                    >
-                      {{
-                        selected_files.length === 0
-                          ? "全部" + total_files + "页"
-                          : "已选择" + selected_files.length + "页"
-                      }}
-                    </el-tag>
-                  </div>
+                  :focus_file="focus_file"
+                  :file_edit_mode="file_edit_mode"
+                  :user_status="user_status"
+                  :total_files="total_files"
+                />
 
-                  <div class="export-section">
-                    <div class="export-section-title">选择操作</div>
-                    <div class="export-operation">
-                      <el-button
-                        type="primary"
-                        :icon="Select"
-                        size="default"
-                        @click=""
-                      >
-                        全选
-                      </el-button>
-                      <el-button
-                        type="warning"
-                        :icon="Switch"
-                        size="default"
-                        @click=""
-                      >
-                        反选
-                      </el-button>
-                      <el-button
-                        type="danger"
-                        :icon="Delete"
-                        size="default"
-                        @click=""
-                      >
-                        清空
-                      </el-button>
-                    </div>
-                  </div>
-
-                  <div class="export-section">
-                    <div class="export-section-title">导出选项</div>
-                    <div class="export-option">
-                      <el-button
-                        type="primary"
-                        :icon="PictureFilled"
-                        size="large"
-                        @click=""
-                      >
-                        图片 + 翻译
-                      </el-button>
-                      <el-button
-                        type="success"
-                        :icon="DocumentCopy"
-                        size="large"
-                        @click=""
-                      >
-                        仅翻译
-                      </el-button>
-                    </div>
-                  </div>
-
-                  <div class="export-section">
-                    <div class="export-section-title">导出历史</div>
-                    <div
-                      v-for="record in projectStore.project_output_history"
-                      :key="record.createdTime"
-                    >
-                      <el-card>
-                        <el-image :src="record.user.avatar" fit="cover" />
-                        <span>{{ record.user.nickname }}</span>
-                        <span>{{ record.createdTime }}</span>
-                        <!-- TODO by influ3nza: mock output history -->
-                      </el-card>
-                    </div>
-                    <div
-                      v-if="projectStore.project_output_history.length === 0"
-                    >
-                      <el-empty
-                        description="暂无导出记录"
-                        :image-size="50"
-                        style="padding: 5px"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="panel-header upload-panel">
-                    <div class="header-content">
-                      <el-icon class="export-icon">
-                        <Upload />
-                      </el-icon>
-                      <span class="panel-title">上传文件</span>
-                    </div>
-                    <el-button> 上传 </el-button>
-                  </div>
-
-                  <div class="panel-header search-panel">
-                    <div class="header-content">
-                      <el-icon class="export-icon">
-                        <Search />
-                      </el-icon>
-                      <span class="panel-title">译文搜索/替换</span>
-                    </div>
-                    <el-switch
-                      active-text="生成校对"
-                      inactive-text="修改原文"
-                    />
-                  </div>
-
-                  <div class="export-section">
-                    <p>a</p>
-                    <p>a</p>
-                    <p>a</p>
-                    <p>a</p>
-                    <p>a</p>
-                    <p>a</p>
-                    <p>a</p>
-                    <p>a</p>
-                    <p>a</p>
-                    <p>a</p>
-                    <p>a</p>
-                  </div>
-                </div>
+                <ProjectImageEdit
+                  v-if="file_edit_mode"
+                  class="container-right export-panel"
+                  :selected_files="selected_files"
+                  :total_files="total_files"
+                />
               </div>
             </div>
           </el-tab-pane>
@@ -385,11 +174,241 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="项目操作" name="project">
-            <span></span>
+          <el-tab-pane label="项目详情" name="project">
+            <div style="padding: 0 5px">
+              <ProjectUserStatus
+                :user_status="user_status"
+                :user_labor="user_labor"
+              />
+            </div>
 
-            <span>危险区域</span>
-            <el-button type="error">退出项目</el-button>
+            <el-divider />
+
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                padding: 0 5px;
+              "
+            >
+              <div style="padding: 0 5px 10px 5px; width: 30%">
+                <el-card shadow="hover" class="progress-card">
+                  <template #header>
+                    <div class="card-header">
+                      <div style="align-items: center; display: flex">
+                        <el-icon class="header-icon"><Document /></el-icon>
+                        <span class="header-title">项目进度</span>
+                      </div>
+                    </div>
+                  </template>
+
+                  <div class="progress-content">
+                    <!-- 环状进度条区域 -->
+                    <div class="circular-progress-container">
+                      <div class="circular-progress-wrapper">
+                        <!-- 外层环：翻译进度 -->
+                        <div class="progress-ring outer-ring">
+                          <el-progress
+                            type="circle"
+                            :percentage="translationPercentage"
+                            :width="160"
+                            :stroke-width="8"
+                            color="#409EFF"
+                            :show-text="false"
+                          />
+                        </div>
+
+                        <!-- 内层环：校对进度 -->
+                        <div class="progress-ring inner-ring">
+                          <el-progress
+                            type="circle"
+                            :percentage="checkPercentage"
+                            :width="120"
+                            :stroke-width="6"
+                            color="#67C23A"
+                            :show-text="false"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- 进度说明 -->
+                      <div class="progress-legend">
+                        <div class="legend-item">
+                          <div class="legend-color translation"></div>
+                          <span class="legend-text"
+                            >翻译进度 {{ translationPercentage }}%</span
+                          >
+                          <span class="legend-count"
+                            >{{
+                              projectStore.project_detail.translatedSourceCount
+                            }}/{{
+                              projectStore.project_detail.sourceCount
+                            }}</span
+                          >
+                        </div>
+                        <div class="legend-item">
+                          <div class="legend-color check"></div>
+                          <span class="legend-text"
+                            >校对进度 {{ checkPercentage }}%</span
+                          >
+                          <span class="legend-count"
+                            >{{
+                              projectStore.project_detail.checkedSourceCount
+                            }}/{{ projectStore.project_detail.sourceCount }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </el-card>
+              </div>
+              <div style="width: 68%">
+                <el-card shadow="hover" class="progress-card">
+                  <template #header>
+                    <div class="card-header">
+                      <div style="align-items: center; display: flex">
+                        <el-icon class="header-icon"><Document /></el-icon>
+                        <span class="header-title">项目信息</span>
+                      </div>
+                      <ProjectProgressStatus
+                        :status="projectStore.project_detail.status"
+                        :is_published="projectStore.project_detail.isPublished"
+                      />
+                    </div>
+                  </template>
+
+                  <div class="project-info-content">
+                    <!-- 项目名称 -->
+                    <el-row class="info-row" :gutter="12" align="middle">
+                      <el-col :span="4">
+                        <el-text
+                          class="info-label"
+                          type="primary"
+                          size="default"
+                          tag="strong"
+                        >
+                          项目名称：
+                        </el-text>
+                      </el-col>
+                      <el-col :span="16" class="info-value">
+                        <el-text size="default">
+                          {{ projectStore.project_detail.title }}
+                        </el-text>
+                      </el-col>
+                      <el-col
+                        :span="4"
+                        style="display: flex; justify-content: flex-end"
+                      >
+                        <el-button
+                          size="small"
+                          :icon="DocumentCopy"
+                          @click="copyProjectName"
+                          plain
+                        >
+                          复制
+                        </el-button>
+                      </el-col>
+                    </el-row>
+
+                    <!-- 项目ID -->
+                    <el-row class="info-row" align="middle">
+                      <el-col :span="4">
+                        <el-text
+                          class="info-label"
+                          type="primary"
+                          size="default"
+                          tag="strong"
+                        >
+                          项目ID：
+                        </el-text>
+                      </el-col>
+                      <el-col :span="16" class="info-value">
+                        <el-text size="default" type="info">
+                          {{ projectStore.project_detail.worksetId }} -
+                          {{ projectStore.project_detail.id }}
+                        </el-text>
+                      </el-col>
+                      <el-col
+                        :span="4"
+                        style="display: flex; justify-content: flex-end"
+                      >
+                        <el-button
+                          type="default"
+                          size="small"
+                          :icon="DocumentCopy"
+                          @click="copyProjectId"
+                          plain
+                        >
+                          复制
+                        </el-button>
+                      </el-col>
+                    </el-row>
+
+                    <!-- 项目介绍 -->
+                    <el-row class="info-row">
+                      <el-col :span="4">
+                        <el-text
+                          class="info-label"
+                          type="primary"
+                          size="default"
+                          tag="strong"
+                        >
+                          项目介绍：
+                        </el-text>
+                      </el-col>
+                      <el-col :span="20" class="info-value">
+                        <el-text size="default" line-clamp="3">
+                          {{
+                            projectStore.project_detail.description ||
+                            "暂无介绍"
+                          }}
+                        </el-text>
+                      </el-col>
+                    </el-row>
+
+                    <!-- 自动加入设置 -->
+                    <el-row class="info-row" align="middle">
+                      <el-col :span="4">
+                        <el-text
+                          class="info-label"
+                          type="primary"
+                          size="default"
+                          tag="strong"
+                        >
+                          自动加入：
+                        </el-text>
+                      </el-col>
+                      <el-col :span="20" class="info-value">
+                        <el-tag
+                          :type="
+                            projectStore.project_detail.autoJoin
+                              ? 'success'
+                              : 'warning'
+                          "
+                          size="default"
+                          effect="light"
+                        >
+                          <el-icon style="margin-right: 4px">
+                            <component
+                              :is="
+                                projectStore.project_detail.autoJoin
+                                  ? 'Check'
+                                  : 'Close'
+                              "
+                            />
+                          </el-icon>
+                          {{
+                            projectStore.project_detail.autoJoin
+                              ? "允许"
+                              : "不允许"
+                          }}
+                        </el-tag>
+                      </el-col>
+                    </el-row>
+                  </div>
+                </el-card>
+              </div>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -406,15 +425,12 @@ import ProjectImageCard from "@/components/ProjectImageCard.vue";
 import { useAuthStore } from "@/stores/auth";
 import { MemberLabor } from "@/types";
 import { generateRoleByMask } from "@/utils/userAbility";
-import {
-  Delete,
-  DocumentCopy,
-  PictureFilled,
-  Search,
-  Select,
-  Switch,
-  Upload,
-} from "@element-plus/icons-vue";
+import { Delete, Search } from "@element-plus/icons-vue";
+import ProjectImagePreview from "@/components/ProjectImagePreview.vue";
+import ProjectImageEdit from "@/components/ProjectImageEdit.vue";
+import ProjectImageHeader from "@/components/ProjectImageHeader.vue";
+import ProjectUserStatus from "@/components/ProjectUserStatus.vue";
+import ProjectProgressStatus from "@/components/ProjectProgressStatus.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -513,15 +529,6 @@ const stopResize = () => {
   localStorage.setItem("proj-detail-left", leftWidth.value.toString());
 };
 
-// 开始翻译功能
-const startTranslation = () => {
-  router.push(
-    `/translator/${projectStore.project_detail?.moetranId}/${
-      projectStore.project_file_page[focus_file.value!].id
-    }`
-  );
-};
-
 // 分页处理
 const handleCurrentPageChange = (page: number) => {
   current_page.value = page;
@@ -572,6 +579,20 @@ const filteredUsers = computed(() => {
 const routerBack = () => {
   router.back();
 };
+
+// 计算翻译进度百分比
+const translationPercentage = computed(() => {
+  const total = projectStore.project_detail!.sourceCount;
+  const translated = projectStore.project_detail!.translatedSourceCount;
+  return total > 0 ? Math.round((translated / total) * 100) : 0;
+});
+
+// 计算校对进度百分比
+const checkPercentage = computed(() => {
+  const total = projectStore.project_detail!.sourceCount;
+  const checked = projectStore.project_detail!.checkedSourceCount;
+  return total > 0 ? Math.round((checked / total) * 100) : 0;
+});
 
 onMounted(async () => {
   // 获取项目详情
@@ -659,6 +680,8 @@ main {
   height: 100%;
   padding: 1.5rem;
   padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .resize-handle {
@@ -949,29 +972,6 @@ main {
   margin-top: 1rem;
   width: 100%;
   height: 100%;
-  overflow-y: auto;
-}
-
-.preview-placeholder {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: 10px;
-}
-
-.preview-placeholder h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 1vh 0;
-  color: #374151;
-}
-
-.preview-placeholder p {
-  font-size: 1rem;
-  margin: 0;
-  color: #6b7280;
 }
 
 .responsive-grid {
@@ -999,71 +999,6 @@ main {
   font-weight: 500;
 }
 
-.image-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 10px 0 10px 0;
-}
-
-.full-image-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 95%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.full-image {
-  cursor: pointer;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-:deep(.el-image-viewer__btn) {
-  opacity: 1;
-}
-
-:deep(.el-image-viewer__actions__inner .el-button) {
-  font-size: 18px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-/* 蒙版样式 */
-.image-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  border-radius: 8px;
-  pointer-events: none;
-}
-
-.full-image-wrapper:hover .image-overlay {
-  opacity: 0.5;
-}
-
-.overlay-content {
-  text-align: center;
-  color: white;
-  pointer-events: none;
-}
-
-.overlay-content span {
-  font-size: 1rem;
-  font-weight: 500;
-}
-
 /* 暗色主题 */
 .dark .placeholder-content h3 {
   color: #f9fafb;
@@ -1088,81 +1023,128 @@ main {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--el-border-color-light);
 }
+.progress-card {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
 
-.panel-header {
+.progress-card:hover {
+  transform: translateY(-2px);
+}
+
+.card-header {
   display: flex;
   align-items: center;
+  font-weight: 600;
   justify-content: space-between;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-
-  .header-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .export-icon {
-    font-size: 20px;
-    color: var(--el-color-primary);
-  }
-
-  .panel-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--el-text-color-primary);
-  }
-
-  .file-count {
-    font-weight: 600;
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 16px;
-  }
+  align-items: center;
 }
 
-.export-section {
-  padding-top: 8px;
-  padding-bottom: 8px;
+.header-icon {
+  margin-right: 8px;
+  color: var(--el-color-primary);
+  font-size: 18px;
+}
+
+.header-title {
+  font-size: 18px;
+  color: var(--el-text-color-primary);
+}
+
+.project-info-content {
+  padding: 4px 0;
+}
+
+.info-row {
+  padding: 8px 0;
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
-.export-section-title {
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
+.info-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.info-label {
   font-weight: 500;
-  margin-bottom: 12px;
+  white-space: nowrap;
 }
 
-.export-operation {
+.info-value {
+  word-break: break-all;
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-
-  .el-button {
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
+  align-items: center;
 }
 
-.export-option {
+.circular-progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.circular-progress-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  height: 200px;
+}
+
+.progress-ring {
+  position: absolute;
+}
+
+.outer-ring {
+  z-index: 1;
+}
+
+.inner-ring {
+  z-index: 2;
+}
+
+.progress-legend {
   display: flex;
   gap: 12px;
-
-  .el-button {
-    border-radius: 8px;
-    font-weight: 600;
-    height: 44px;
-    transition: all 0.2s ease;
-  }
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
 }
 
-.upload-panel {
-  margin-top: 8px;
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.search-panel {
-  margin-top: 8px;
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-color.translation {
+  background-color: #409eff;
+}
+
+.legend-color.check {
+  background-color: #67c23a;
+}
+
+.legend-text {
+  font-size: 16px;
+  color: #606266;
+  font-weight: 500;
+}
+
+.legend-count {
+  font-size: 16px;
+  color: #909399;
+  margin-left: 4px;
+}
+
+/* 环形进度条动画 */
+:deep(.el-progress-circle__path) {
+  transition: stroke-dasharray 0.6s ease;
 }
 </style>

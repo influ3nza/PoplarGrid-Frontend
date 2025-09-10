@@ -312,48 +312,11 @@
                       </el-link>
                     </div>
                   </div>
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: flex-end;
-                      align-items: center;
-                    "
-                  >
-                    <div class="progress-container">
-                      <div
-                        v-for="(label, index) in status_fields_short"
-                        :key="label"
-                        class="progress-item"
-                      >
-                        <span class="progress-label">{{ label }}</span>
-                        <component
-                          :is="getProgressIcon(scope.row.status, index).icon"
-                          class="progress-icon"
-                          :class="
-                            getProgressIcon(scope.row.status, index).class
-                          "
-                        />
-                      </div>
-                      <div class="progress-item">
-                        <span class="progress-label pub-label">发布</span>
-                        <component
-                          :is="
-                            pub_options.find(
-                              (item) =>
-                                item.value === Number(scope.row.isPublished)
-                            )?.icon
-                          "
-                          class="progress-icon"
-                          :class="
-                            pub_options.find(
-                              (item) =>
-                                item.value === Number(scope.row.isPublished)
-                            )?.class
-                          "
-                        />
-                      </div>
-                    </div>
-                  </div>
+
+                  <ProjectProgressStatus
+                    :status="scope.row.status"
+                    :is_published="scope.row.isPublished"
+                  />
                 </div>
               </template>
             </el-table-column>
@@ -420,22 +383,19 @@ import {
   Search,
   Star,
 } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
 import { useSyncStore } from "@/stores/sync";
 import { useAuthStore } from "@/stores/auth";
 import ProjectTableSpan from "@/components/ProjectTableSpan.vue";
 import { membersApi } from "@/api/members";
-import { ProjectBasic, ProjectDetail, User } from "@/types";
+import { ProjectDetail, User } from "@/types";
 import { useProjectsStore } from "@/stores/projects";
-import { title } from "process";
-import HelloWorld from "@/components/HelloWorld.vue";
+import ProjectProgressStatus from "@/components/ProjectProgressStatus.vue";
+import { pub_options } from "@/utils/static";
 
 const router = useRouter();
 const syncStore = useSyncStore();
 const authStore = useAuthStore();
 const projectStore = useProjectsStore();
-
-const hello = ref<any>(null);
 
 const expand_row_keys = ref<any[]>([]); // 保证表格同一时间只有一行被展开
 
@@ -457,7 +417,6 @@ const title_filter = ref<string>(""); // 项目标题筛选
 const workset_filter = ref<number | null>(null); // 项目集筛选
 
 const status_fields = ["翻译", "校对", "嵌字", "审核"];
-const status_fields_short = ["翻", "校", "嵌", "审"];
 const status_options = [
   {
     icon: Star,
@@ -502,26 +461,6 @@ const order_options = [
     value: 3,
   },
 ];
-const pub_options = [
-  {
-    label: "全部状态",
-    value: 2,
-    icon: Star,
-    class: "text-blue-500 w-4 h-4",
-  },
-  {
-    label: "未发布",
-    value: 0,
-    icon: CloseBold,
-    class: "text-gray-500 w-4 h-4",
-  },
-  {
-    label: "已发布",
-    value: 1,
-    icon: Select,
-    class: "text-green-500 w-4 h-4",
-  },
-];
 
 // 分页相关
 const current_page = ref<number>(1);
@@ -555,14 +494,6 @@ const detailed_project_loading = ref<boolean>(false); // 详细项目是否在�
 // 颜色主题
 const color_theme_1 = ref<string>("");
 const color_theme_2 = ref<string>("");
-
-const getProgressIcon = (status: number, index: number) => {
-  const trit = status.toString(3).padStart(4, "0")[index];
-
-  if (trit === "2") return { icon: Select, class: "text-green-500" };
-  if (trit === "1") return { icon: MoreFilled, class: "text-yellow-500" };
-  return { icon: CloseBold, class: "text-gray-500" };
-};
 
 const navigateToProject = (project: any) => {
   // 跳转到项目详情页
@@ -765,7 +696,7 @@ onMounted(async () => {
 }
 
 .dark .table-container {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: linear-gradient(135deg, #203b1e 0%, #334155 100%);
   border-color: #475569;
 }
 
@@ -890,41 +821,6 @@ onMounted(async () => {
   font-size: 14px;
   background-color: var(--project-theme-color);
   border-color: var(--project-theme-color);
-}
-
-.progress-container {
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  gap: 16px;
-  padding: 8px;
-  min-width: 24vw;
-}
-
-.progress-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5vw;
-}
-
-.progress-label {
-  font-size: 18px;
-  font-weight: 500;
-  color: #6b7280;
-}
-
-.dark .progress-label {
-  color: #9ca3af;
-}
-
-.pub-label {
-  font-weight: 600;
-  color: var(--project-theme-color);
-}
-
-.progress-icon {
-  width: 16px;
-  height: 16px;
 }
 
 .project-detail-loading {
