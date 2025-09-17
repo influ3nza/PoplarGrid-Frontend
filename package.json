@@ -13,6 +13,7 @@
     "axios": "^1.7.7",
     "echarts": "^5.5.1",
     "element-plus": "^2.8.4",
+    "lodash": "^4.17.21",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.4.1",
     "tippy.js": "^6.3.7",
